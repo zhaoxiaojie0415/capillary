@@ -54,10 +54,9 @@ object ZkKafka {
 
   def getSpoutTopology(root: String): Option[Topology] = {
     // Fetch the spout root
-    zkClient.getChildren.forPath(makePath(applyBase(Seq(stormZkRoot, Some(root))))).asScala.flatMap({ spout =>
-      zkClient.getChildren.forPath(makePath(applyBase(Seq(stormZkRoot, Some(root))) ++ Seq(Some(spout)))).asScala.flatMap({ part =>
+    zkClient.getChildren.forPath(makePath(applyBase(Seq(stormZkRoot, Some(root))))).asScala.flatMap({ part =>
         // Fetch the partitions so we can pick the first one
-        val path = makePath(applyBase(Seq(stormZkRoot, Some(root))) ++ Seq(Some(spout)) ++ Seq(Some(part)))
+        val path = makePath(applyBase(Seq(stormZkRoot, Some(root))) ++ Seq(Some(part)))
         // Use the first partition's data to build up info about the topology
         // Also, don't trust zk to have valid JSON, it may be null or something...
         getZkData(path).map { zkData =>
@@ -67,7 +66,6 @@ object ZkKafka {
           val name  = (state \ "topology" \ "name").as[String]
           Topology(name = name, topic = topic, spoutRoot = root)
         }
-      })
     }).headOption
   }
 
