@@ -73,17 +73,12 @@ object ZkKafka {
     // There is basically nothing for error checking in here.
     val s = zkClient.getChildren.forPath(makePath(applyBase(Seq(stormZkRoot, Some(root)))))
     // This gets us to the spout root
-    s.asScala.flatMap({ pts =>
-      // Fetch the partition information
-      val parts = zkClient.getChildren.forPath(makePath(applyBase(Seq(stormZkRoot, Some(root))) ++ Seq(Some(pts))))
-      // For each partition, fetch the offsets.
-      parts.asScala.map({ p =>
-        val jsonState = zkClient.getData.forPath(makePath(applyBase(Seq(stormZkRoot, Some(root))) ++ Seq(Some(pts)) ++ Seq(Some(p))))
-        val state = Json.parse(jsonState)
-        val offset = (state \ "offset").as[Long]
-        val partition = (state \ "partition").as[Long]
-        (partition.toInt, offset)
-      })
+    s.asScala.map({ pts =>
+      val jsonState = zkClient.getData.forPath(makePath(applyBase(Seq(stormZkRoot, Some(root))) ++ Seq(Some(pts))))
+      val state = Json.parse(jsonState)
+      val offset = (state \ "offset").as[Long]
+      val partition = (state \ "partition").as[Long]
+      (partition.toInt, offset)
     }).toMap
   }
 
