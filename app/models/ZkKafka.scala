@@ -1,21 +1,26 @@
 package models
 
-import kafka.api.{OffsetFetchRequest,OffsetRequest,PartitionOffsetRequestInfo}
+import kafka.api.{OffsetFetchRequest, OffsetRequest, PartitionOffsetRequestInfo}
 import kafka.common.TopicAndPartition
 import kafka.consumer.SimpleConsumer
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.framework.recipes.cache.PathChildrenCache
 import org.apache.curator.retry.ExponentialBackoffRetry
+import org.apache.zookeeper.data.Stat
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.Logger
 import play.api.Play
 import play.api.Play.current
+
 import scala.collection.JavaConverters._
 
 object ZkKafka {
   case class Totals(total: Long, kafkaTotal: Long, spoutTotal: Long)
   case class Delta(partition: Int, amount: Option[Long], current: Long, storm: Option[Long])
   case class Topology(name: String, spoutRoot: String, topic: String)
+  case class ConsumerState(createtime:String, modifytime:String)
 
   def topoCompFn(t1: Topology, t2: Topology) = {
     (t1.name compareToIgnoreCase t2.name) < 0
@@ -42,6 +47,14 @@ object ZkKafka {
     zkClient.getChildren.forPath(makePath(Seq(stormZkRoot))).asScala.map({ r =>
       getSpoutTopology(r)
     }).flatten.sortWith(topoCompFn)
+  }
+
+  def getConsumerStatus(name: String) : ConsumerState = {
+    val state = new Stat();
+    zkClient.getData.storingStatIn(state).forPath(makePath(applyBase(Seq(stormZkRoot, Some(name)))) ++ "/partition_0")
+    val dateFormat  = DateTimeFormat.fullDateTime()
+    val generatedAt = new DateTime().toString(dateFormat)
+    ConsumerState(createtime= new DateTime(state.getCtime).toString(dateFormat), modifytime = new DateTime(state.getMtime).toString(dateFormat))
   }
 
   def getZkData(path: String): Option[Array[Byte]] = {

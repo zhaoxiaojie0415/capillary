@@ -28,7 +28,7 @@ Since Kafka and Storm handle the flow of data (water) through our infrastructure
 Wanna run it? Awesome! This is a [Play Framework](http://www.playframework.com/) app so it works the way all other Play apps do:
 
 ```
-$ sbt universal:package-zip-tarball
+$ sbt universal:package-zip-tarball(sbt universal:packageBin windows)
 … lots of crazy computer talk …
 [success] Total time: 4 s, completed Aug 8, 2014 2:04:06 PM
 ```
@@ -108,4 +108,5 @@ Each `$PARTITION_ID` stores state as a JSON object that looks like:
   "topic": "$TOPIC_NAME"
 }
 ```
+
 

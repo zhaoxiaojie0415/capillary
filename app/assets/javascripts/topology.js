@@ -63,13 +63,13 @@ var Topology = React.createClass({
     }
 
     var url = "/topo?name=" + this.props.name + "&toporoot=" + this.props.root + "&topic=" + this.props.topic;
-
+    var consumer = "/consumer?name=" +this.props.root;
     return (
       <tr className={classes.join(' ')}>
         <td><a href={url}>{ this.props.name }</a></td>
         <td>{ this.state.delta }</td>
         <td>{ this.props.topic }</td>
-        <td>{ this.state.message }</td>
+        <td><a href={consumer}>{ this.props.root}</a></td>
       </tr>
     );
   }

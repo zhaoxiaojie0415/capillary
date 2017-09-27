@@ -63,4 +63,9 @@ object Application extends Controller {
     writer.writeValue(stringWriter, Metrics.metricRegistry)
     Ok(stringWriter.toString).as("application/json").withHeaders("Cache-Control" -> "must-revalidate,no-cache,no-store")
   }
+
+  def consumerstate(name: String) = Action { implicit request =>
+    val consumerstate = ZkKafka.getConsumerStatus(name)
+    Ok(views.html.consumer(consumerstate))
+  }
 }
