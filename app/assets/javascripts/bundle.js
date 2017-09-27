@@ -56,7 +56,7 @@
 	  render: function render() {
 	    var topologies = [];
 	    this.props.topologies.forEach(function (topo) {
-	      topologies.push(React.createElement(Topology, { key: topo.name, name: topo.name, root: topo.root, topic: topo.topic }));
+	      topologies.push(React.createElement(Topology, { name: topo.name, root: topo.root, topic: topo.topic }));
 	    });
 
 	    return React.createElement(

@@ -6,7 +6,7 @@ var Overview = React.createClass({
   render: function() {
     var topologies = [];
     this.props.topologies.forEach(function(topo) {
-      topologies.push(<Topology key={topo.name} name={topo.name} root={topo.root} topic={topo.topic}/>);
+      topologies.push(<Topology name={topo.name} root={topo.root} topic={topo.topic}/>);
     });
 
     return (
