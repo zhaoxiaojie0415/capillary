@@ -68,4 +68,10 @@ object Application extends Controller {
     val consumerstate = ZkKafka.getConsumerStatus(name)
     Ok(views.html.consumer(consumerstate))
   }
+
+  def deleteConsumer(name: String) = Action { implicit request =>
+//    Redirect("/index", 200) 其实这样重定向也可以实现刷新
+    ZkKafka.deleteConsumer(name)
+    Ok("Hello World!")
+  }
 }

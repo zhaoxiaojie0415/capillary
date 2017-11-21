@@ -17,6 +17,10 @@ import play.api.Play.current
 import scala.collection.JavaConverters._
 
 object ZkKafka {
+  def deleteConsumer(name: String) = {
+    zkClient.delete().deletingChildrenIfNeeded().forPath(makePath(applyBase(Seq(stormZkRoot, Some(name)))));
+  }
+
   case class Totals(total: Long, kafkaTotal: Long, spoutTotal: Long)
   case class Delta(partition: Int, amount: Option[Long], current: Long, storm: Option[Long])
   case class Topology(name: String, spoutRoot: String, topic: String)

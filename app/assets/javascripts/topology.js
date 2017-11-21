@@ -46,6 +46,7 @@ var Topology = React.createClass({
     r.send()
   },
   componentWillMount: function() {
+    //定时刷新器
     //this.refreshTimer = window.setInterval(this.refreshDelta, this.props.refreshInterval);
     this.refreshDelta();
   },
@@ -55,6 +56,24 @@ var Topology = React.createClass({
       this.refreshTimer = null;
     }
   },
+
+    handleClick: function (event) {
+        var r = new XMLHttpRequest();
+        var query = "name=" + this.props.root;
+        r.open("DELETE", "/api/consume/delete?" + query, true);
+
+        r.onreadystatechange = function () {
+            if ( r.readyState != 4 ) { return; }
+            if ( r.status == 500 ) {
+                this.setState({ delta: this.DEFAULT_DELTA, error: true, message: 'Capillary returned a 500 error. Check ZK configuration?' });
+                return;
+            }
+            window.location.reload();
+        }.bind(this);
+        r.send();
+        // this.props.meth1od()
+
+    },
 
   render: function() {
     var classes = [];
@@ -70,6 +89,7 @@ var Topology = React.createClass({
         <td>{ this.state.delta }</td>
         <td>{ this.props.topic }</td>
         <td><a href={consumer}>{ this.props.root}</a></td>
+        <td><button onClick={this.handleClick}>删除</button></td>
       </tr>
     );
   }
